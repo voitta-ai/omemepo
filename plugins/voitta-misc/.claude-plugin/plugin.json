@@ -1,0 +1,12 @@
+{
+  "name": "voitta-misc",
+  "version": "0.0.1",
+  "description": "Catch-all for Voitta-curated Claude Code skills, commands, and agents.",
+  "author": {
+    "name": "Voitta",
+    "url": "https://github.com/voitta-ai"
+  },
+  "homepage": "https://github.com/voitta-ai/voitta-omemepo",
+  "repository": "https://github.com/voitta-ai/voitta-omemepo",
+  "keywords": ["voitta", "claude-code", "skills"]
+}
