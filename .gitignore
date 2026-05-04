@@ -12,3 +12,5 @@ build/
 *.tar.gz
 omemepo-profile*.tar.gz
 .claude/settings.local.json
+
+.handoffs/
