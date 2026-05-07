@@ -51,7 +51,7 @@ def publish(
         ..., help="Path to a local skill/agent/command to promote."
     ),
     marketplace: str = typer.Option(
-        "voitta-ai/voitta-omemepo",
+        "voitta-ai/omemepo",
         "--marketplace",
         "-m",
         help="Target marketplace repo (owner/name).",

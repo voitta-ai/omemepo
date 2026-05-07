@@ -1,5 +1,5 @@
 {
-  "name": "voitta-omemepo",
+  "name": "omemepo",
   "owner": {
     "name": "Voitta",
     "url": "https://github.com/voitta-ai"
@@ -17,7 +17,7 @@
         "name": "Voitta",
         "url": "https://github.com/voitta-ai"
       },
-      "homepage": "https://github.com/voitta-ai/voitta-omemepo",
+      "homepage": "https://github.com/voitta-ai/omemepo",
       "source": "./plugins/voitta-misc"
     }
   ]

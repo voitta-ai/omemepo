@@ -5,6 +5,7 @@ description = "Portable Claude Code profiles and Voitta marketplace."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Voitta" }]
+license = { file = "LICENSE" }
 dependencies = [
     "typer>=0.12",
 ]
@@ -13,8 +14,8 @@ dependencies = [
 omemepo = "omemepo.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/voitta-ai/voitta-omemepo"
-Repository = "https://github.com/voitta-ai/voitta-omemepo"
+Homepage = "https://github.com/voitta-ai/omemepo"
+Repository = "https://github.com/voitta-ai/omemepo"
 
 [build-system]
 requires = ["hatchling"]

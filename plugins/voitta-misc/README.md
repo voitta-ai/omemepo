@@ -9,6 +9,6 @@ As shared content grows, themed plugins (`voitta-aws`, `voitta-git`,
 ## Install
 
 ```
-/plugin marketplace add voitta-ai/voitta-omemepo
+/plugin marketplace add voitta-ai/omemepo
 /plugin install voitta-misc
 ```

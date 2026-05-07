@@ -11,7 +11,7 @@ A portability and sharing layer for Claude Code, combining:
 Both live in this single repo but are independent:
 
 - The marketplace is consumable without the tool:
-  `/plugin marketplace add voitta-ai/voitta-omemepo` works with stock
+  `/plugin marketplace add voitta-ai/omemepo` works with stock
   Claude Code.
 - The tool is usable without the marketplace: `omemepo pack`/`unpack` never
   touch any marketplace.

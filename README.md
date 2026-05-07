@@ -32,7 +32,7 @@ Your `~/.claude/` — including local skills, agents, commands, hooks, and
 No omemepo required. Works with stock Claude Code:
 
 ```
-/plugin marketplace add voitta-ai/voitta-omemepo
+/plugin marketplace add voitta-ai/omemepo
 /plugin install voitta-misc
 ```
 
