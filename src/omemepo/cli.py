@@ -1,11 +1,14 @@
 """omemepo CLI entry point.
 
-Commands are stubs at this stage. See docs/architecture.md for the design.
+See docs/architecture.md for the design.
 """
+
+from pathlib import Path
 
 import typer
 
 from omemepo import __version__
+from omemepo.pack import pack as pack_impl
 
 
 app = typer.Typer(
@@ -26,14 +29,31 @@ def pack(
     redact_secrets: bool = typer.Option(
         True,
         "--redact-secrets/--no-redact-secrets",
-        help="Redact MCP tokens and similar secrets from settings.",
+        help="Redact secrets from settings.json by key-name blacklist.",
+    ),
+    include_plugin_contents: bool = typer.Option(
+        False,
+        "--include-plugin-contents/--no-include-plugin-contents",
+        help=(
+            "Include the full ~/.claude/plugins/ tree. Default carries only "
+            "installed_plugins.json so unpack can re-install via /plugin."
+        ),
+    ),
+    home: str = typer.Option(
+        None,
+        "--home",
+        help="Override Claude home (default: ~/.claude).",
     ),
 ) -> None:
     """Pack your ~/.claude/ profile into a portable tarball."""
-    typer.echo(
-        f"pack: not implemented yet (would write {output}, redact={redact_secrets})"
+    home_path = Path(home) if home else None
+    written = pack_impl(
+        output=Path(output),
+        home=home_path,
+        redact_secrets=redact_secrets,
+        include_plugin_contents=include_plugin_contents,
     )
-    raise typer.Exit(code=1)
+    typer.echo(str(written))
 
 
 @app.command()
