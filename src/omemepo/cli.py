@@ -9,6 +9,13 @@ import typer
 
 from omemepo import __version__
 from omemepo.pack import pack as pack_impl
+from omemepo.publish import (
+    ARTIFACT_TYPES,
+    PublishError,
+    detect_kind,
+    publish_gh,
+    publish_local,
+)
 from omemepo.unpack import unpack as unpack_impl, UnpackError
 
 
@@ -103,14 +110,76 @@ def publish(
         "voitta-ai/omemepo",
         "--marketplace",
         "-m",
-        help="Target marketplace repo (owner/name).",
+        help="Target marketplace repo (owner/name). Used in gh mode.",
+    ),
+    plugin: str = typer.Option(
+        "voitta-misc",
+        "--plugin",
+        help="Target plugin directory under plugins/.",
+    ),
+    kind: str = typer.Option(
+        None,
+        "--type",
+        help=f"Artifact type ({', '.join(ARTIFACT_TYPES)}); auto-detected if omitted.",
+    ),
+    checkout: str = typer.Option(
+        None,
+        "--checkout",
+        help=(
+            "Local marketplace checkout path. If set, only copies the artifact "
+            "into the checkout tree; user commits/pushes/PRs by hand. If "
+            "omitted, uses gh CLI for the full flow."
+        ),
+    ),
+    title: str = typer.Option(None, "--title", help="PR title (gh mode)."),
+    body: str = typer.Option(None, "--body", help="PR body (gh mode)."),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="In gh mode, print the planned commands and exit.",
     ),
 ) -> None:
-    """Open a PR promoting a local artifact to a marketplace."""
-    typer.echo(
-        f"publish: not implemented yet (would PR {path} to {marketplace})"
-    )
-    raise typer.Exit(code=1)
+    """Promote a local artifact to a marketplace plugin."""
+    src = Path(path).resolve()
+    if not src.exists():
+        typer.echo(f"path not found: {src}", err=True)
+        raise typer.Exit(code=2)
+    try:
+        resolved_kind = kind or detect_kind(src)
+        if resolved_kind not in ARTIFACT_TYPES:
+            typer.echo(
+                f"--type must be one of {', '.join(ARTIFACT_TYPES)}",
+                err=True,
+            )
+            raise typer.Exit(code=2)
+        if checkout:
+            dest = publish_local(
+                src=src,
+                checkout=Path(checkout).resolve(),
+                plugin=plugin,
+                kind=resolved_kind,
+            )
+            typer.echo(str(dest))
+            typer.echo(
+                f"copied. Next: cd {checkout} && git checkout -b <branch> && "
+                f"git add plugins/{plugin} && git commit && git push && "
+                f"gh pr create",
+                err=True,
+            )
+        else:
+            result = publish_gh(
+                src=src,
+                marketplace=marketplace,
+                plugin=plugin,
+                kind=resolved_kind,
+                title=title,
+                body=body,
+                dry_run=dry_run,
+            )
+            typer.echo(result)
+    except PublishError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=2)
 
 
 @app.command()
