@@ -9,6 +9,7 @@ import typer
 
 from omemepo import __version__
 from omemepo.pack import pack as pack_impl
+from omemepo.unpack import unpack as unpack_impl, UnpackError
 
 
 app = typer.Typer(
@@ -59,10 +60,38 @@ def pack(
 @app.command()
 def unpack(
     archive: str = typer.Argument(..., help="Path to profile tarball."),
+    home: str = typer.Option(
+        None,
+        "--home",
+        help="Override Claude home (default: ~/.claude).",
+    ),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        help="Allow extracting into a non-empty target home.",
+    ),
 ) -> None:
     """Unpack a profile tarball into ~/.claude/."""
-    typer.echo(f"unpack: not implemented yet (would read {archive})")
-    raise typer.Exit(code=1)
+    home_path = Path(home) if home else None
+    try:
+        restored = unpack_impl(
+            archive=Path(archive),
+            home=home_path,
+            force=force,
+        )
+    except UnpackError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=2)
+    typer.echo(str(restored))
+    plugins_manifest = restored / "plugins" / "installed_plugins.json"
+    full_plugins_tree = (restored / "plugins" / "marketplaces").is_dir()
+    if plugins_manifest.is_file() and not full_plugins_tree:
+        typer.echo(
+            "note: plugins/installed_plugins.json restored (identifiers only). "
+            "Run /plugin marketplace add and /plugin install in Claude Code to "
+            "complete plugin restoration.",
+            err=True,
+        )
 
 
 @app.command()
