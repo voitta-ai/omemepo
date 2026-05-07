@@ -102,19 +102,48 @@ Type hints double as self-documenting command surface.
 - CI
 - `LICENSE`
 
-## Open questions
+## Resolved questions
 
-- **License**: AGPL-3.0 (matches voitta-rag, llm-tldr) vs MIT (matches
-  truffaldino, broader adoption).
-- **Plugin surface in pack**: should `~/.claude/plugins/` (installed
-  marketplaces + plugins) be carried in the pack tarball, or should pack
-  carry only identifiers and unpack re-install via `/plugin`? Re-install
-  is smaller and self-heals version drift; direct copy is faster and works
-  offline.
-- **Secret redaction**: pattern-based (regex over common token shapes) vs
-  schema-based (per-MCP-server allowlist of safe fields).
-- **Themed plugins split**: what triggers a theme to split out of
-  `voitta-misc` — number of skills, semantic cohesion, contributor request?
+### License: MIT
+
+Matches truffaldino. Broader adoption than AGPL. Tooling vs service shapes
+that decision differently from voitta-rag/llm-tldr.
+
+### Plugin surface in pack: hybrid, identifiers default
+
+`omemepo pack` defaults to carrying only installed-plugin identifiers
+(marketplace + name + version). On `unpack`, omemepo re-installs each
+entry via `/plugin` flows. Self-heals version drift, keeps tarball small.
+
+Flag `--include-plugin-contents` switches to wholesale: tar the entire
+`~/.claude/plugins/` tree byte-for-byte. For air-gap migration, local
+forks, or reproducing exact state.
+
+### Secret redaction: schema-based blacklist (not allowlist)
+
+Default-allow. The redactor walks structured config (settings.json, MCP
+configs) and redacts keys whose names match a blacklist of patterns.
+
+Seed blacklist patterns (case-insensitive substring match on key names):
+`token`, `secret`, `password`, `passwd`. Users can REMOVE entries from the
+blacklist (e.g. a project legitimately uses a `passwordHashAlgorithm` key
+that's not actually a secret) and ADD entries.
+
+Why blacklist not allowlist: allowlist requires per-MCP-server schema
+catalogs that don't exist yet; new servers fail closed and break for
+users until catalog catches up. Blacklist ships today and stays correct
+across new MCP servers without maintenance, at the cost of missing novel
+secret-shaped fields whose key names don't match the blacklist.
+
+### Themed plugin split: semantic cohesion (maintainer judgment)
+
+Skills live in `voitta-misc` until a coherent theme emerges
+(`voitta-aws`, `voitta-git`, `voitta-debug`, …). Maintainer proposes split.
+No mechanical skill-count threshold.
+
+The repo's `CLAUDE.md` carries operating instructions for the maintainer
+to recognize when a split is warranted: a cluster of skills that share a
+domain, common dependencies, or a target subset of users.
 
 ## Future: Claude Desktop and other tools
 
