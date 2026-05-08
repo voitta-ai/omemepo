@@ -67,3 +67,13 @@ See `docs/architecture.md` for the design.
 
 Each of these can ship an entry under `plugins/` to provide the Claude Code-side
 glue (MCP wiring + usage skills).
+
+## Status
+
+`pack`, `unpack`, `publish`, and `mcp` (with `list`, `export`, `import`,
+`diff`, `enable`, `disable`, `profile`, `prompts` subcommands) are
+implemented. `diff` is tracked in
+[#1](https://github.com/voitta-ai/omemepo/issues/1).
+End-to-end pack/unpack across machines is tracked in
+[#2](https://github.com/voitta-ai/omemepo/issues/2).
+See `docs/architecture.md` for the design.

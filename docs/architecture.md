@@ -80,27 +80,26 @@ Type hints double as self-documenting command surface.
 - Branch protection on `main`, required review from CODEOWNERS, squash
   merges
 
-## Commands (planned)
+## Commands
 
 | Command | Status | Purpose |
 |---|---|---|
-| `omemepo pack` | stub | Tar up `~/.claude/`, redact secrets |
-| `omemepo unpack` | stub | Restore a profile tarball |
-| `omemepo publish <path>` | stub | Open PR promoting a local artifact |
-| `omemepo diff` | stub | Local vs marketplace delta |
-| `omemepo mcp ...` | stub | MCP/prompt sync (Claude Code scope) |
-| `omemepo version` | works | Print version |
+| `omemepo pack` | implemented | Tar `~/.claude/` + redacted `~/.claude.json` slice; identifier mode for plugins |
+| `omemepo unpack` | implemented | Restore a profile tarball; merge slice into existing `~/.claude.json` with backup |
+| `omemepo publish <path>` | implemented | Copy mode (`--checkout`) or full gh automation (clone, branch, push, PR) |
+| `omemepo diff` | open ([#1](https://github.com/voitta-ai/omemepo/issues/1)) | Local vs marketplace delta |
+| `omemepo mcp list / export / import / diff` | implemented | MCP slice ops against `~/.claude.json` |
+| `omemepo mcp enable / disable` | implemented | Toggle per-project `.mcp.json` server approval |
+| `omemepo mcp profile create / list / activate / delete` | implemented | Named MCP slice snapshots |
+| `omemepo mcp prompts list / export / import` | implemented | Slash-command sync |
+| `omemepo version` | implemented | Print version |
 
-## What's not in the skeleton
+## Not yet built
 
-- Actual pack/unpack implementation
-- Secret detection/redaction rules
-- MCP sync logic
 - MCP server (omemepo exposing its own tools via MCP)
 - Themed plugins beyond `voitta-misc`
 - `CODEOWNERS`
 - CI
-- `LICENSE`
 
 ## Resolved questions
 
