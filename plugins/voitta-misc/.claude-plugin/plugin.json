@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "description": "Catch-all for Voitta-curated Claude Code skills, commands, and agents.",
   "author": {
-    "name": "Voitta",
-    "url": "https://github.com/voitta-ai"
+    "name": "Voitta"
   },
   "homepage": "https://github.com/voitta-ai/omemepo",
   "repository": "https://github.com/voitta-ai/omemepo",

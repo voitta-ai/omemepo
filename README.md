@@ -33,8 +33,12 @@ No omemepo required. Works with stock Claude Code:
 
 ```
 /plugin marketplace add voitta-ai/omemepo
-/plugin install voitta-misc
+/plugin install voitta-misc@omemepo
 ```
+
+If `marketplace add` fails with a stale-clone error
+(`destination path … already exists`), remove
+`~/.claude/plugins/marketplaces/voitta-ai-omemepo*` and retry.
 
 ## Install the tool
 
