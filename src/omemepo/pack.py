@@ -42,10 +42,29 @@ EXCLUDE_GLOBS = (
     ".DS_Store",
 )
 
+# Path-component names that exclude an entire subtree. Machine-specific
+# virtualenv content; recreated on the destination if the user wants it.
+EXCLUDE_PATH_COMPONENTS = frozenset({
+    ".venv",
+    "venv",
+    "__pycache__",
+    "node_modules",
+})
+
 
 def _excluded(name: str) -> bool:
     for pattern in EXCLUDE_GLOBS:
         if fnmatch.fnmatch(name, pattern):
+            retval = True
+            return retval
+    retval = False
+    return retval
+
+
+def _excluded_path(p: Path, root: Path) -> bool:
+    rel = p.relative_to(root)
+    for part in rel.parts:
+        if part in EXCLUDE_PATH_COMPONENTS:
             retval = True
             return retval
     retval = False
@@ -71,8 +90,13 @@ def _add_file(
 
 def _iter_files(root: Path):
     for p in sorted(root.rglob("*")):
-        if p.is_file() and not _excluded(p.name):
-            yield p
+        if not p.is_file():
+            continue
+        if _excluded(p.name):
+            continue
+        if _excluded_path(p, root):
+            continue
+        yield p
 
 
 CLAUDE_JSON_SLICE_ARCNAME = "omemepo/claude-json-slice.json"
