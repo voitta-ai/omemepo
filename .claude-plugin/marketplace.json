@@ -1,21 +1,16 @@
 {
   "name": "omemepo",
   "owner": {
-    "name": "Voitta",
-    "url": "https://github.com/voitta-ai"
+    "name": "Voitta"
   },
-  "metadata": {
-    "description": "Portable Claude Code profiles and curated Voitta toolchain plugins.",
-    "version": "0.0.1"
-  },
+  "description": "Portable Claude Code profiles and curated Voitta toolchain plugins.",
   "plugins": [
     {
       "name": "voitta-misc",
       "description": "Catch-all for Voitta-curated Claude Code skills, commands, and agents.",
       "version": "0.0.1",
       "author": {
-        "name": "Voitta",
-        "url": "https://github.com/voitta-ai"
+        "name": "Voitta"
       },
       "homepage": "https://github.com/voitta-ai/omemepo",
       "source": "./plugins/voitta-misc"
