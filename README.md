@@ -67,7 +67,3 @@ See `docs/architecture.md` for the design.
 
 Each of these can ship an entry under `plugins/` to provide the Claude Code-side
 glue (MCP wiring + usage skills).
-
-## Status
-
-Early skeleton. Commands are stubs. See `docs/architecture.md`.
