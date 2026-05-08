@@ -5,6 +5,8 @@ and rejects entries that would write outside the target home.
 """
 
 import json
+import os
+import sys
 import tarfile
 from pathlib import Path
 
@@ -94,6 +96,21 @@ def unpack(
             target = home / rel
             if member.isdir():
                 target.mkdir(parents=True, exist_ok=True)
+                continue
+            if member.issym() or member.islnk():
+                link = member.linkname
+                link_parts = Path(link).parts
+                unsafe = link.startswith("/") or ".." in link_parts
+                if unsafe:
+                    print(
+                        f"warning: skipping unsafe symlink {member.name} -> {link}",
+                        file=sys.stderr,
+                    )
+                    continue
+                target.parent.mkdir(parents=True, exist_ok=True)
+                if target.is_symlink() or target.exists():
+                    target.unlink()
+                os.symlink(link, target)
                 continue
             if not member.isfile():
                 continue
