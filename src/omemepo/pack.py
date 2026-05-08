@@ -6,10 +6,12 @@ Toggle with include_plugin_contents / redact_secrets.
 
 import fnmatch
 import io
+import json
 import tarfile
 from pathlib import Path
 
-from omemepo.redact import redact_text
+from omemepo.mcp import extract_slice, load_claude_json
+from omemepo.redact import redact_json, redact_text
 
 
 INCLUDE_NAMES = (
@@ -73,11 +75,22 @@ def _iter_files(root: Path):
             yield p
 
 
+CLAUDE_JSON_SLICE_ARCNAME = "omemepo/claude-json-slice.json"
+
+
+def _add_bytes(tar: tarfile.TarFile, arcname: str, payload: bytes) -> None:
+    info = tarfile.TarInfo(name=arcname)
+    info.size = len(payload)
+    info.mode = 0o600
+    tar.addfile(info, io.BytesIO(payload))
+
+
 def pack(
     output: Path,
     home: Path = None,
     redact_secrets: bool = True,
     include_plugin_contents: bool = False,
+    claude_json: Path = None,
 ) -> Path:
     """Pack ~/.claude/ profile into output tarball. Returns the output path."""
     if home is None:
@@ -85,6 +98,9 @@ def pack(
     home = home.resolve()
     output = output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
+
+    if claude_json is None:
+        claude_json = Path.home() / ".claude.json"
 
     with tarfile.open(output, "w:gz") as tar:
         for name in INCLUDE_NAMES:
@@ -115,6 +131,15 @@ def pack(
                         "omemepo/plugins/installed_plugins.json",
                         False,
                     )
+
+        if claude_json.is_file():
+            full = load_claude_json(claude_json)
+            slice_ = extract_slice(full)
+            if slice_:
+                if redact_secrets:
+                    slice_ = redact_json(slice_)
+                payload = (json.dumps(slice_, indent=2) + "\n").encode("utf-8")
+                _add_bytes(tar, CLAUDE_JSON_SLICE_ARCNAME, payload)
 
     retval = output
     return retval

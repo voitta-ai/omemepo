@@ -52,14 +52,21 @@ def pack(
         "--home",
         help="Override Claude home (default: ~/.claude).",
     ),
+    claude_json: str = typer.Option(
+        None,
+        "--claude-json",
+        help="Override path to ~/.claude.json (used for tests).",
+    ),
 ) -> None:
     """Pack your ~/.claude/ profile into a portable tarball."""
     home_path = Path(home) if home else None
+    cj_path = Path(claude_json) if claude_json else None
     written = pack_impl(
         output=Path(output),
         home=home_path,
         redact_secrets=redact_secrets,
         include_plugin_contents=include_plugin_contents,
+        claude_json=cj_path,
     )
     typer.echo(str(written))
 
@@ -77,14 +84,27 @@ def unpack(
         "--force",
         help="Allow extracting into a non-empty target home.",
     ),
+    claude_json: str = typer.Option(
+        None,
+        "--claude-json",
+        help="Override path to ~/.claude.json (used for tests).",
+    ),
+    merge_mode: str = typer.Option(
+        "merge",
+        "--merge-mode",
+        help="How to apply the carried claude.json slice: merge | replace.",
+    ),
 ) -> None:
     """Unpack a profile tarball into ~/.claude/."""
     home_path = Path(home) if home else None
+    cj_path = Path(claude_json) if claude_json else None
     try:
-        restored = unpack_impl(
+        restored, conflicts = unpack_impl(
             archive=Path(archive),
             home=home_path,
             force=force,
+            claude_json=cj_path,
+            merge_mode=merge_mode,
         )
     except UnpackError as exc:
         typer.echo(str(exc), err=True)
@@ -97,6 +117,12 @@ def unpack(
             "note: plugins/installed_plugins.json restored (identifiers only). "
             "Run /plugin marketplace add and /plugin install in Claude Code to "
             "complete plugin restoration.",
+            err=True,
+        )
+    if conflicts:
+        typer.echo(
+            "claude.json merge: kept existing values for conflicting servers: "
+            + ", ".join(conflicts),
             err=True,
         )
 
