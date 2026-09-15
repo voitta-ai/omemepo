@@ -57,11 +57,12 @@ jobs:
           # key - it must move in lockstep with the repo version. Select
           # by name, not position, so this survives the marketplace
           # listing more than one plugin.
-          market=$(jq -r '.plugins[] | select(.name == "voitta-misc") | .version' "$MARKETPLACE_FILE")
-          if [ -z "$market" ]; then
-            echo "::error::$MARKETPLACE_FILE has no plugin named voitta-misc."
+          market_count=$(jq '[.plugins[] | select(.name == "voitta-misc")] | length' "$MARKETPLACE_FILE")
+          if [ "$market_count" -ne 1 ]; then
+            echo "::error::$MARKETPLACE_FILE has $market_count plugins named voitta-misc, expected exactly 1."
             exit 1
           fi
+          market=$(jq -r '.plugins[] | select(.name == "voitta-misc") | .version' "$MARKETPLACE_FILE")
           if [ "$market" != "$new" ]; then
             echo "::error::$MARKETPLACE_FILE voitta-misc version is $market, expected $new - bump both in lockstep."
             exit 1
